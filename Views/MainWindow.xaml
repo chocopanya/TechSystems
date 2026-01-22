@@ -14,8 +14,13 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <!-- Шапка -->
             <RowDefinition Height="Auto"/>
+            <!-- Панель фильтров (только для менеджера) -->
+            <RowDefinition Height="*"/>
+            <!-- Список тарифов -->
+            <RowDefinition Height="Auto"/>
+            <!-- Панель управления (только для менеджера) -->
         </Grid.RowDefinitions>
 
         <!-- Шапка -->
@@ -43,36 +48,68 @@
             </Grid>
         </Border>
 
-        <!-- Панель фильтров для менеджера -->
+        <!-- Панель фильтров для менеджера (скрыта для гостя) -->
         <Border Grid.Row="1" x:Name="ManagerFilterPanel" 
-                Background="#F5F5F5" Padding="10" 
+                Background="#F5F5F5" Padding="10"
                 Visibility="Collapsed">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Поиск:" 
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="Поиск:" 
                            FontWeight="Bold" VerticalAlignment="Center" 
                            Margin="0,0,10,0"/>
-                <TextBox x:Name="txtSearch" Width="200" Height="30" 
-                         TextChanged="TxtSearch_TextChanged"/>
 
-                <TextBlock Text="Фильтр по типу услуги:" 
+                <TextBox Grid.Column="1" x:Name="txtSearch" Height="30" 
+         VerticalContentAlignment="Center"
+         Padding="5"
+         TextChanged="TxtSearch_TextChanged">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Style.Triggers>
+                                <Trigger Property="Text" Value="">
+                                    <Setter Property="Foreground" Value="Gray"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+
+                <TextBlock Grid.Column="2" Text="Тип услуги:" 
                            FontWeight="Bold" VerticalAlignment="Center" 
                            Margin="20,0,10,0"/>
-                <ComboBox x:Name="cmbServiceTypeFilter" Width="150" Height="30"
-                          SelectionChanged="CmbServiceTypeFilter_SelectionChanged"/>
 
-                <Button x:Name="btnResetFilters" Content="Сбросить фильтры" 
-                        Width="120" Height="30" Margin="20,0,0,0"
+                <ComboBox Grid.Column="3" x:Name="cmbServiceTypeFilter" Height="30"
+                          VerticalContentAlignment="Center"
+                          SelectionChanged="CmbServiceTypeFilter_SelectionChanged">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <Button Grid.Column="5" x:Name="btnResetFilters" Content="Сбросить фильтры" 
+                        Width="120" Height="30"
                         Click="BtnResetFilters_Click"/>
-            </StackPanel>
+            </Grid>
         </Border>
 
         <!-- ListView с тарифами -->
-        <ScrollViewer Grid.Row="1" x:Name="svTariffs" Margin="10" 
-                      VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Grid.Row="2" Margin="10" 
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
             <ItemsControl x:Name="icTariffs" ItemsSource="{Binding}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center"/>
+                        <WrapPanel Orientation="Horizontal" 
+                                   HorizontalAlignment="Center"/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
 
@@ -202,8 +239,8 @@
             </ItemsControl>
         </ScrollViewer>
 
-        <!-- Панель управления для менеджера -->
-        <Border Grid.Row="2" Background="#F5F5F5" Padding="10">
+        <!-- Панель управления для менеджера (скрыта для гостя) -->
+        <Border Grid.Row="3" Background="#F5F5F5" Padding="10">
             <StackPanel x:Name="ManagerPanel" Orientation="Horizontal" 
                         HorizontalAlignment="Center" Visibility="Collapsed">
                 <Button x:Name="btnAddTariff" Content="Добавить тариф" 

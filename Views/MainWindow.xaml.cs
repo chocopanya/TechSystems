@@ -6,7 +6,7 @@ using System.Windows.Controls;
 using TechSystems.Models;
 using TechSystems.Services;
 
-namespace TechSystems.Views  // ВАЖНО: Пространство имен должно быть TechSystems.Views
+namespace TechSystems.Views
 {
     public partial class MainWindow : Window
     {
@@ -75,9 +75,19 @@ namespace TechSystems.Views  // ВАЖНО: Пространство имен д
             try
             {
                 var serviceTypes = _dataService.GetServiceTypes();
-                cmbServiceTypeFilter.ItemsSource = serviceTypes;
+
+                // Добавляем "Все типы" в начало списка
+                var allTypes = new ObservableCollection<ServiceType>();
+                allTypes.Add(new ServiceType { Id = -1, Name = "Все типы" });
+
+                foreach (var type in serviceTypes)
+                {
+                    allTypes.Add(type);
+                }
+
+                cmbServiceTypeFilter.ItemsSource = allTypes;
                 cmbServiceTypeFilter.DisplayMemberPath = "Name";
-                cmbServiceTypeFilter.SelectedIndex = -1;
+                cmbServiceTypeFilter.SelectedIndex = 0;
             }
             catch (Exception ex)
             {
@@ -93,16 +103,16 @@ namespace TechSystems.Views  // ВАЖНО: Пространство имен д
 
             // Фильтрация по поиску
             string searchText = txtSearch.Text?.Trim().ToLower();
-            if (!string.IsNullOrEmpty(searchText))
+            if (!string.IsNullOrEmpty(searchText) && searchText != "поиск тарифов...")
             {
                 filtered = filtered.Where(t =>
                     t.Name.ToLower().Contains(searchText) ||
-                    t.Description.ToLower().Contains(searchText) ||
-                    t.ServiceType.Name.ToLower().Contains(searchText));
+                    (t.Description != null && t.Description.ToLower().Contains(searchText)) ||
+                    (t.ServiceType?.Name != null && t.ServiceType.Name.ToLower().Contains(searchText)));
             }
 
             // Фильтрация по типу услуги
-            if (cmbServiceTypeFilter.SelectedItem is ServiceType selectedType)
+            if (cmbServiceTypeFilter.SelectedItem is ServiceType selectedType && selectedType.Id != -1)
             {
                 filtered = filtered.Where(t => t.ServiceTypeId == selectedType.Id);
             }
@@ -126,8 +136,8 @@ namespace TechSystems.Views  // ВАЖНО: Пространство имен д
 
         private void BtnResetFilters_Click(object sender, RoutedEventArgs e)
         {
-            txtSearch.Text = "";
-            cmbServiceTypeFilter.SelectedIndex = -1;
+            txtSearch.Clear();
+            cmbServiceTypeFilter.SelectedIndex = 0;
             LoadTariffs();
         }
 
