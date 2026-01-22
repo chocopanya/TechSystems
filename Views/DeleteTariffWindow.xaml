@@ -1,0 +1,52 @@
+﻿<Window x:Class="TechSystems.Views.DeleteTariffWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Удаление тарифа" Height="400" Width="600"
+        WindowStartupLocation="CenterOwner">
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Выберите тариф для удаления:" 
+                   FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+
+        <DataGrid Grid.Row="1" x:Name="dgTariffs" 
+                  AutoGenerateColumns="False" 
+                  IsReadOnly="True"
+                  SelectionMode="Single"
+                  FontSize="13">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Название" 
+                                   Binding="{Binding Name}" 
+                                   Width="*"/>
+                <DataGridTextColumn Header="Тип услуги" 
+                                   Binding="{Binding ServiceType.Name}" 
+                                   Width="120"/>
+                <DataGridTextColumn Header="Дата начала" 
+                                   Binding="{Binding StartDate, StringFormat='dd.MM.yyyy'}" 
+                                   Width="100"/>
+                <DataGridTextColumn Header="Стоимость" 
+                                   Binding="{Binding FinalPrice, StringFormat='{}{0:N0} руб.'}" 
+                                   Width="100"/>
+                <DataGridTextColumn Header="Лицензии" 
+                                   Binding="{Binding AvailableLicenses, StringFormat='{}{0}/{1}'}" 
+                                   Width="80"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" 
+                    HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button x:Name="btnDelete" Content="Удалить" 
+                    Width="80" Height="30" Margin="5"
+                    Background="#F44336" Foreground="White"
+                    Click="BtnDelete_Click"/>
+            <Button x:Name="btnCancel" Content="Отмена" 
+                    Width="80" Height="30" Margin="5"
+                    Click="BtnCancel_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
